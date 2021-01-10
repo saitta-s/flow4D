@@ -5,6 +5,7 @@ import numpy as np
 import pyvista as pv
 import sys
 from tqdm import tqdm
+from glob import glob
 
 
 def organizeSeries(series, rows, columns, slices, frames):
@@ -84,12 +85,30 @@ def write4DData(data, path, saveFormat, prefix=''):
     elif 'vtu' in saveFormat:
         for fr in tqdm(range(nOfTimeSteps), desc='Saving frame'):
             writer = vtk.vtkXMLUnstructuredGridWriter()
+            writer.SetCompressorTypeToZLib()
             writer.SetInputData(data[fr].cast_to_unstructured_grid())
             writer.SetFileName(join(path, prefix + '{:02d}'.format(fr) + '.vtu'))
             writer.Update()
     else:
         print("Error: only .vtk and .vtu formats are supported.")
         sys.exit()
+
+
+def writePVD(period, dataPath):
+    dataFiles = sorted(glob(join(dataPath, '*')))
+    t = np.linspace(0, period, len(dataFiles))
+
+    pvdFile = join(dataPath, 'pvd.pvd')
+    with open(pvdFile, 'a+') as f:
+        f.write('<?xml version="1.0"?>\n')
+        f.write('<VTKFile type="Collection" version="0.1" byte_order="LittleEndian">\n')
+        f.write('  <Collection>\n')
+        f.write('    <DataSet timestep="0.000" file="{}"/>\n'.format(os.path.basename(dataFiles[0])))
+        for i in range(1, len(t)):
+            f.write('	<DataSet timestep="{:.3f}" file="{}"/>\n'.format(t[i], os.path.basename(dataFiles[i])))
+        f.write('  </Collection>\n')
+        f.write('</VTKFile>')
+
 
 
 

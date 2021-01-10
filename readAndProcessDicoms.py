@@ -2,15 +2,7 @@
 
 ## imports
 
-import os
-from os.path import join
-import sys
-import pydicom
-import numpy as np
-import vtk
 from itertools import groupby
-from tqdm import tqdm
-import pyvista as pv
 import re
 
 from utils import *
@@ -18,13 +10,13 @@ from readers import flowReader
 
 ## preferences
 
-datadir         = r'/home/simone/phd/tesisti/valentina_scarponi/Sorted'
+datadir         = ''
 units           = 'm/s'
 saveFormat      = '.vtk'
-outdir          = r'/home/simone/phd/coding/flow4D/processed'
-saveName        = 'valentinaNY'
+outdir          = './processed'
+saveName        = ''
 prefix          = 'flow4D_'
-venc            = [200,200,200]
+venc            = [200, 200, 200]
 reading_method  = 'series'  # choose between 'folders' and 'series'. Use 'folders' if data is already organized.
 
 
@@ -53,6 +45,7 @@ columns     = ds.Columns
 origin      = [0.0, 0.0, 0.0]
 orientation = ds.ImageOrientationPatient
 position    = ds.PatientPosition
+period      = float(ds.NominalInterval) / 1000
 spacing     = [float(ds.PixelSpacing[1]), float(ds.PixelSpacing[0]), get_dz(ds)]
 if units == 'm/s':
     spacing = [s / 1000 for s in spacing]
@@ -165,6 +158,7 @@ for f in tqdm(range(frames), desc='Processing frame'):
     v   = velTemp[:, :, :, f, 1]
     w   = velTemp[:, :, :, f, 2]
     allData.append(create_all_vars_points(mag, u, v, w, spacing, origin))
+    #allData.append(create_all_vars(mag, u, v, w, spacing, origin))
 
 ## save processed data
 

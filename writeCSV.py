@@ -7,14 +7,17 @@ import numpy as np
 import pandas as pd
 from vtk.util.numpy_support import vtk_to_numpy
 from glob import glob
-import pyvista as pv
+from symfit import parameters, variables, sin, cos, Fit
+import matplotlib.pyplot as plt
+from scipy import interpolate
+
 
 from utils import sureDir
 
 ## preferences
-processed4DFlowDataDir  = r'/home/simone/phd/coding/flow4D/processed/valentinaNY'
-registered_stl          = r'/home/simone/phd/tesisti/valentina_scarponi/fixed.stl'
-outputDir               = r'/home/simone/phd/tesisti/valentina_scarponi/probedData'
+processed4DFlowDataDir  = ''
+registered_stl          = ''
+outputDir               = ''
 
 sureDir(outputDir)
 ##
@@ -22,7 +25,8 @@ sureDir(outputDir)
 allData = []
 processed4DFlowFiles = sorted(glob(join(processed4DFlowDataDir, '*.vtk')))
 for f in tqdm(range(len(processed4DFlowFiles)), desc='Reading processed vtk frames'):
-    reader = vtk.vtkXMLStructuredGridReader()
+    #reader = vtk.vtkXMLStructuredGridReader()
+    reader = vtk.vtkStructuredGridReader()
     reader.SetFileName(processed4DFlowFiles[f])
     reader.Update()
     grid = reader.GetOutput()
@@ -49,7 +53,7 @@ for f in tqdm(range(len(allData)), desc='Writing point data for frame'):
     vtk_pts = geoWithVars.GetPoints()
 
     ptsArr = vtk_to_numpy(vtk_pts.GetData())
-    velArr = vtk_to_numpy(geoWithVars.GetPointData().GetArray('Velocity'))
+    velArr = vtk_to_numpy(geoWithVars.GetPointData().GetArray('VelocityVector'))
 
     df_arr[:, 0] = ptsArr[:, 0]
     df_arr[:, 1] = ptsArr[:, 1]
@@ -64,3 +68,5 @@ for f in tqdm(range(len(allData)), desc='Writing point data for frame'):
     writer.SetFileName(join(outputDir, 'probedData_{:02d}.vtp'.format(f)))
     writer.SetInputData(geoWithVars)
     writer.Update()
+
+
