@@ -1,3 +1,3 @@
 import sys
 import os
-import os.path  a
+import os.path as osp
