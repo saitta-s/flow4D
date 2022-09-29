@@ -1,16 +1,37 @@
 # flow4D
-This module is used to read a 4D flow MRI acquisition in dicom format and
-write .vtk files that can be opened and furhter processed in Paraview.
+This repository can be used to work with 4D flow MRI acquisitions for CFD applications. <br/>
 
+## Features
+The main provided functionalities enable to: 
+- read 4D flow dicom files and generate .vtk files that can be visualized in Paraview;
+- extract velocity profiles from 4D flow and map them to the inlet of a target model;
+- write boundary conditions files for multiple CFD software, including Fluent, CFX, Star-CCM+, OpenFoam, SimVascular
+- generate an arbitrary number of realistic velocity profiles from a statistical shape model
 
 ## Installation
-To run the scripts you need python (recommended version 3.6, [link](https://www.python.org/downloads/release/python-360/)).
-In Windows: make sure to add the python executable to environment variables. (I suggest you do this during the installation) <br/>
-To install the module unzip the provided folder, open cmd or powershell and follow these steps:
+To run the scripts you need a python interpreter. The use of a conda environment is 
+strongly recommended. 
+
+### Dependencies
+- [vmtk](https://github.com/conda-forge/vmtk-feedstock)
+- pyvista
+
+
+## Read and process 4D flow dicom files
 ```
-cd flow4D
-pip install -r requirements.txt
+python dicoms_to_vtk.py
 ```
+
+## Interactive plane selection and velocity profile extraction
+```
+python plane_selection.py
+```
+
+## Map precomputed velocity profiles to a target inlet shape
+```
+python mapping.py
+```
+
 
 ## Reading method
 Two methods for reading 4D flow acquisitions were implemented.<br/>
