@@ -14,6 +14,7 @@ strongly recommended.
 
 ### Dependencies
 - [vmtk](https://github.com/conda-forge/vmtk-feedstock)
+- pydicom
 - pyvista
 
 

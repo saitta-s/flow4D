@@ -237,7 +237,7 @@ def interpolate_profiles(aligned_planes, fxdpts, intp_options):
         nnVel = NearestNDInterpolator(aligned_planes[k].points, aligned_planes[k]['Velocity'])(fxdpts)
         I = RBFInterpolator(fxdpts, nnVel,
                             kernel=intp_options['kernel'], smoothing=intp_options['smoothing'],
-                            epsilon=intp_options['epsilon'], degree=intp_options['degree'])
+                            epsilon=1, degree=intp_options['degree'])
 
         vel_interp.append(I(fxdpts))
 

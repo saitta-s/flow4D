@@ -9,6 +9,7 @@ import re
 import utils as ut
 
 
+#-----------------------------------------------------------------------------------------------------------------------
 ## Options
 dataDir = r'C:\DATA\phd_laptop\data_4dflow\cornell_4dvar\2000'
 saveDir = 'output2000'
@@ -21,10 +22,12 @@ phaseCoeff = 10.0
 magCoeff = 1.0
 
 
+#-----------------------------------------------------------------------------------------------------------------------
 ## Read dicom files and create numpy arrays
 data, meta = ut.read_acquisition(dataDir)
 arrayData = ut.seriesData_to_arrayData(data, meta)
 
+#-----------------------------------------------------------------------------------------------------------------------
 ## Automatic detection of magnitude series
 meansArr = [np.mean(x) for x in arrayData]
 dist0 = []
@@ -50,6 +53,7 @@ for i in range(3):
     velTemp[:, :, :, :, i] = arrayData[i][:]
 
 
+#-----------------------------------------------------------------------------------------------------------------------
 ## Velocity adjustment
 print('Adjusting units.')
 if re.search('GE', meta['vendor'], re.IGNORECASE):
@@ -97,6 +101,7 @@ if minusW:
     velTemp[:, :, :, :, 2] *= -1
 
 
+#-----------------------------------------------------------------------------------------------------------------------
 ## Create vtk grids
 os.makedirs(osp.join(saveDir, 'flow'), exist_ok=True)
 print('Creating grids and writing to file.')

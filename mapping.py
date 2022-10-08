@@ -8,22 +8,23 @@ import pyvista as pv
 import utils as ut
 
 
+#-----------------------------------------------------------------------------------------------------------------------
 ## Options
-outputDir = r'C:\DATA\phd_laptop\dev\scra'
-saveName = 'test'
-source_profile_dir = r'C:\DATA\phd_laptop\dev\ssm_prj\SSM_output\mean_profile'
-target_profile_fn = r'C:\DATA\phd_laptop\dev\ssm_prj\data\ProcessedData1(vtp)\1011\plane3.stl'
-flip_normals = True
-leftmost_idx_on_target = 143
+outputDir = r'' # path for saving resampled .vtp files
+saveName = ''   # filename of resamples .vtp files
+source_profile_dir = r'' # directory containing .vtp files associated to a 4D profile
+target_profile_fn = r''  # can be a .stl, .vtk or .vtp file
+flip_normals = True # usually set to True, but might have to change depending on target plane orientation
+leftmost_idx_on_target = 143      # index of the leftmost point in the target plane w.r.t the subject
 intp_options = {
-    'zero_boundary_dist': 0.1,
-    'zero_backflow': False,
-    'kernel': 'linear',
-    'smoothing': 0.5,
-    'epsilon': 1,
-    'degree': 0}
+    'zero_boundary_dist': 0.1, # percentage of border with zero velocity (smooth damping at the border)
+    'zero_backflow': False, # set all backflow components to zero
+    'kernel': 'linear', # RBF interpolation kernel (linear is recommended)
+    'smoothing': 0.5, # interpolation smoothing, range recommended [0, 2]
+    'degree': 0} # degree of polynomial added to the RBF interpolation matrix
 
 
+#-----------------------------------------------------------------------------------------------------------------------
 ## Read data
 source_profiles = [pv.read(i) for i in sorted(glob(osp.join(source_profile_dir, '*.vtp')))]
 target_plane = pv.read(target_profile_fn)
@@ -38,6 +39,7 @@ normals = [source_profiles[k].compute_normals()['Normals'].mean(0) for k in rang
 if flip_normals: normals = [normals[k] * -1 for k in range(num_frames)]
 
 
+#-----------------------------------------------------------------------------------------------------------------------
 ## Align source to target
 
 # center at origin for simplicity
@@ -74,6 +76,7 @@ for k in range(num_frames):
     interp_planes[k].points += target_com
 
 
+#-----------------------------------------------------------------------------------------------------------------------
 ## Save profiles to .vtp
 os.makedirs(outputDir, exist_ok=True)
 for k in range(num_frames):
