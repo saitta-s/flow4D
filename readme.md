@@ -13,7 +13,7 @@ To run the scripts you need a python interpreter. The use of a conda environment
 strongly recommended. 
 
 ### Dependencies
-- [vmtk](https://github.com/conda-forge/vmtk-feedstock)
+- [vmtk](https://github.com/conda-forge/vmtk-feedstock) (optional, only required for centerline extraction)
 - pydicom
 - pyvista
 
