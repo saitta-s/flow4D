@@ -10,6 +10,8 @@ import re
 from scipy.interpolate import RBFInterpolator, NearestNDInterpolator
 from scipy.spatial import distance
 import pyvista as pv
+import vtk
+from vmtk import vmtkscripts
 
 
 def get_dz(ds):
@@ -271,4 +273,49 @@ def rotation_matrix_from_axis_and_angle(u, theta):
 
     return R
 
+##----------------------------------------------------------------------------------------------------------------------
+# Geometric analysis functions
+
+def clean_surface(surface, size_factor=0.1):
+    surfaceCleaner = vmtkscripts.vmtkSurfaceKiteRemoval()
+    surfaceCleaner.Surface = surface
+    surfaceCleaner.SizeFactor = size_factor
+    surfaceCleaner.Execute()
+    return surfaceCleaner.Surface
+
+
+def fillHoles(surface, holeSize=40):
+    filler = vtk.vtkFillHolesFilter()
+    filler.SetInputData(surface)
+    filler.SetHoleSize(holeSize)
+    filler.Update()
+    return filler.GetOutput()
+
+
+
+def extract_parent_centerline(surface, dx=0.001, smoothing_iters=50, smoothing_factor=0.5):
+    cl_filter = vmtkscripts.vmtkCenterlines()
+    cl_filter.Surface = surface
+    #cl_filter.AppendEndPoints = 1
+    cl_filter.Resampling = 1
+    cl_filter.ResamplingStepLength = dx
+    cl_filter.Execute()
+
+    attr = vmtkscripts.vmtkCenterlineAttributes()
+    attr.Centerlines = cl_filter.Centerlines
+    attr.Execute()
+
+    geo = vmtkscripts.vmtkCenterlineGeometry()
+    geo.Centerlines = attr.Centerlines
+    geo.LineSmoothing = 0
+    geo.OutputSmoothingLines = 0
+    geo.Execute()
+
+    smoo = vmtkscripts.vmtkCenterlineSmoothing()
+    smoo.Centerlines = geo.Centerlines
+    smoo.NumberOfSmoothingIterations = smoothing_iters
+    smoo.SmoothingFactor = smoothing_factor
+    smoo.Execute()
+
+    return smoo.Centerlines
 
