@@ -10,13 +10,13 @@ from scipy.interpolate import interp1d
 
 #-----------------------------------------------------------------------------------------------------------------------
 ## Options
-profilesDir = r'C:\DATA\phd_laptop\dev\ssm_prj\SSM_output\clinical_cohort\1003'
+profilesDir = r''
 outputDir = r''
 saveName = 'inflow_profiles'
 cfd_delta_t = 0.001  # simulation time steps
 cardiac_cycle_period = 1.0
 time_interpolation = 'cubic' # can be linear, nearest, quadratic, ...
-solver = 'fluent' # can be star, ...!TODO add fluent, CFX, OpenFoam and more
+solver = 'fluent' # can be star, ...!TODO add CFX, OpenFoam and SimVascular
 
 
 #-----------------------------------------------------------------------------------------------------------------------
