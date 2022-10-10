@@ -6,7 +6,6 @@ The main provided functionalities enable to:
 - read 4D flow dicom files and generate .vtk files that can be visualized in Paraview;
 - extract velocity profiles from 4D flow and map them to the inlet of a target model;
 - write boundary conditions files for multiple CFD software, including Fluent, CFX, Star-CCM+, OpenFoam, SimVascular
-- generate an arbitrary number of realistic velocity profiles from a statistical shape model
 
 ## Installation
 To run the scripts you need a python interpreter. The use of a conda environment is 
