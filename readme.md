@@ -1,6 +1,8 @@
 # flow4D
 This repository can be used to work with 4D flow MRI acquisitions for CFD applications. <br/>
 
+Cite the code: [![DOI](https://zenodo.org/badge/295950364.svg)](https://zenodo.org/badge/latestdoi/295950364) <br/>
+
 ## Features
 The main provided functionalities enable to: 
 - read 4D flow dicom files and generate .vtk files that can be visualized in Paraview;
