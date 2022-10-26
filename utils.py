@@ -7,6 +7,7 @@ from tqdm import tqdm
 import pydicom
 from collections import Counter
 import re
+from scipy import interpolate
 from scipy.interpolate import RBFInterpolator, NearestNDInterpolator
 from scipy.spatial import distance
 import pyvista as pv
@@ -319,3 +320,74 @@ def extract_parent_centerline(surface, dx=0.001, smoothing_iters=50, smoothing_f
 
     return smoo.Centerlines
 
+
+
+def time_interpolation(interp_planes, time_intp_options):
+    num_frames = len(interp_planes)
+    t_4dflow = np.linspace(0, time_intp_options['T4df'], num_frames)
+    t_fxd = np.linspace(0, time_intp_options['T4df'], time_intp_options['num_frames_fxd'])
+
+    U = np.array([np.array(interp_planes[k]['Velocity']) for k in range(num_frames)])
+    vel_t_interp = interpolate.interp1d(t_4dflow, U, kind='cubic', axis=0)(t_fxd)
+
+    new_planes = [interp_planes[0].copy() for _ in range(time_intp_options['num_frames_fxd'])]
+    for k in range(len(new_planes)):
+        new_planes[k]['Velocity'] = vel_t_interp[k]
+
+    return new_planes
+
+
+
+# generate fixed plane points
+def set_fixed_points(r_spac=0.05, circ_spac=5):
+    r = np.arange(0.0, 1.0 + r_spac, r_spac)
+    n = np.arange(1, 100 + circ_spac, circ_spac)
+    coordinates = []
+    for rr, nn in zip(r, n):
+        t = np.linspace(0, 2*np.pi, nn, endpoint=False)
+        x = rr * np.cos(t)
+        y = rr * np.sin(t)
+        coordinates.append(np.c_[x, y])
+    fxdpts = np.concatenate(coordinates, axis=0)
+    fxdpts = np.column_stack((fxdpts, np.zeros(len(fxdpts))))
+
+    # landmark in fixed plane
+    fxd_lm_id = np.argmax(fxdpts[:, 0])
+    fxd_lm = fxdpts[fxd_lm_id]
+
+    return fxdpts, fxd_lm
+
+
+# autoscaling function
+def adjust_units(pd, array_name='Velocity'):
+    # assumes pd is a pyvista PolyData or a list of pyvista PolyData
+
+    if not type(pd) == list:
+        pd = [pd]
+
+    distRange = np.max(np.abs(pd[0].points), 0) - np.min(np.abs(pd[0].points), 0)
+    velRange = np.max(np.abs(pd[0][array_name]), 0) - np.min(np.abs(pd[0][array_name]), 0)
+    for i in range(len(pd)):
+        if np.max(distRange) > 5:
+            pd[i].points *= 0.001
+        if np.max(velRange) > 5:
+            pd[i][array_name] *= 0.001
+
+    return pd
+
+
+def compute_flowrate(vtps):
+    flowRate = []
+    for i in range(len(vtps)):
+        dummyPD = vtps[0]
+        normal = dummyPD.compute_normals()['Normals'].mean(0)
+        dummyPD['Velocity'] = vtps[i]['Velocity']
+        dummyPD = dummyPD.point_data_to_cell_data(pass_point_data=True)
+        Q = np.sum(np.dot(dummyPD['Velocity'], normal) * dummyPD.compute_cell_sizes()['Area'])
+        flowRate.append(Q)
+    flowRate = np.array(flowRate)
+    if flowRate[np.argmax(np.abs(flowRate))] < 0:
+        flowRate *= -1
+
+    out = {'Q(t)': flowRate, 'Q_mean': np.mean(flowRate), 'Q_max': np.max(flowRate)}
+    return out
