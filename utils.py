@@ -218,7 +218,10 @@ def interpolate_profiles(aligned_planes, fxdpts, intp_options):
 
     # Set boundary vectors to zero
     dr = intp_options['zero_boundary_dist']  # percentage threshold for zero boundary
-    edge_pts = [aligned_planes[k].extract_feature_edges(boundary_edges=True, feature_edges=False, manifold_edges=False).points for k in range(num_frames)]
+    edges = [aligned_planes[k].extract_feature_edges().connectivity() for k in range(num_frames)]
+    large_edge_id = [np.argmax(np.bincount(edges[k]['RegionId'])) for k in range(num_frames)]
+    edge_pts = [edges[k].points[np.where(edges[k]['RegionId'] == large_edge_id[k])] for k in range(num_frames)]
+    #edge_pts = [aligned_planes[k].extract_feature_edges(boundary_edges=True, feature_edges=False, manifold_edges=False).points for k in range(num_frames)]
     dist2edge = [distance.cdist(aligned_planes[k].points, edge_pts[k]).min(axis=1) for k in range(num_frames)]
     boundary_ids = [np.where(dist2edge[k] < (dr * dist2edge[k].max()))[0] for k in range(num_frames)]
     for k in range(num_frames):
@@ -244,7 +247,10 @@ def interpolate_profiles(aligned_planes, fxdpts, intp_options):
 
         vel_interp.append(I(fxdpts))
 
-        # vel_interp.append(nnVel)
+    # hard no slip condition (double check)
+    if intp_options['hard_noslip']:
+        for k in range(num_frames):
+            vel_interp[k][boundary_ids, :] = 0
 
     # create new polydatas
     interp_planes = [pv.PolyData(fxdpts).delaunay_2d(alpha=0.1) for _ in range(num_frames)]

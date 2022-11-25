@@ -21,7 +21,8 @@ intp_options = {
     'zero_backflow': False, # set all backflow components to zero
     'kernel': 'linear', # RBF interpolation kernel (linear is recommended)
     'smoothing': 0.5, # interpolation smoothing, range recommended [0, 2]
-    'degree': 0} # degree of polynomial added to the RBF interpolation matrix
+    'degree': 0,
+    'hard_noslip': False} # degree of polynomial added to the RBF interpolation matrix
 
 
 #-----------------------------------------------------------------------------------------------------------------------
