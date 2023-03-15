@@ -15,12 +15,12 @@ saveName = ''   # filename of resamples .vtp files
 source_profile_dir = r'' # directory containing .vtp files associated to a 4D profile
 target_profile_fn = r''  # can be a .stl, .vtk or .vtp file
 flip_normals = True # usually set to True, but might have to change depending on target plane orientation
-leftmost_idx_on_target = 143      # index of the leftmost point in the target plane w.r.t the subject
+leftmost_idx_on_target = 000      # index of the leftmost point in the target plane w.r.t the subject
 intp_options = {
-    'zero_boundary_dist': 0.1, # percentage of border with zero velocity (smooth damping at the border)
-    'zero_backflow': False, # set all backflow components to zero
+    'zero_boundary_dist': 0.2, # percentage of border with zero velocity (smooth damping at the border)
+    'zero_backflow': True, # set all backflow components to zero
     'kernel': 'linear', # RBF interpolation kernel (linear is recommended)
-    'smoothing': 0.5, # interpolation smoothing, range recommended [0, 2]
+    'smoothing': 0.01, # interpolation smoothing, range recommended [0, 2]
     'degree': 0,
     'hard_noslip': False} # degree of polynomial added to the RBF interpolation matrix
 
@@ -71,6 +71,7 @@ for k in range(num_frames):
 
 # spatial interpolation
 interp_planes = ut.interpolate_profiles(aligned_planes, target_pts, intp_options)
+interp_planes[2].plot()
 
 # recenter
 for k in range(num_frames):

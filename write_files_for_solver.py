@@ -16,7 +16,8 @@ saveName = 'inflow_profiles'
 cfd_delta_t = 0.001  # simulation time steps
 cardiac_cycle_period = 1.0
 time_interpolation = 'cubic' # can be linear, nearest, quadratic, ...
-solver = 'fluent' # can be star, ...!TODO add CFX, OpenFoam and SimVascular
+solver = 'fluent' # can be star, ...!TODO add CFX, OpenFoam, ...
+vtuFile = r''  # path of the 3D mesh in .vtu format. Only required for Simvascular
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -40,17 +41,17 @@ velcfd = interp1d(t4df, vel4df, axis=0, kind=time_interpolation)(tcfd)
 if solver == 'star':
     # write .csv for star-ccm+
     with open(osp.join(profilesDir, saveName + '.csv'), 'w') as fn:
-        riga = 'X,Y,Z'
+        row = 'X,Y,Z'
         for j in range(len(tcfd)):
-            riga += ',u(m/s)[t={}s],v(m/s)[t={}s],w(m/s)[t={}s]'.format(tcfd[j], tcfd[j], tcfd[j])
-        riga += '\n'
-        fn.write(riga)
+            row += ',u(m/s)[t={}s],v(m/s)[t={}s],w(m/s)[t={}s]'.format(tcfd[j], tcfd[j], tcfd[j])
+        row += '\n'
+        fn.write(row)
         for i in tqdm(range(len(pos))):
-            riga = '{},{},{}'.format(pos[i, 0], pos[i, 1], pos[i, 2])
+            row = '{},{},{}'.format(pos[i, 0], pos[i, 1], pos[i, 2])
             for j in range(len(tcfd)):
-                riga += ',{},{},{}'.format(velcfd[j, i, 0], velcfd[j, i, 1], velcfd[j, i, 2])
-            riga += '\n'
-            fn.write(riga)
+                row += ',{},{},{}'.format(velcfd[j, i, 0], velcfd[j, i, 1], velcfd[j, i, 2])
+            row += '\n'
+            fn.write(row)
 
 if solver == 'fluent':
     # write .prof for ansys fluent
@@ -86,3 +87,26 @@ if solver == 'fluent':
                 fn.write(str(wi) + '\n')
             fn.write(')\n')
             fn.write(')')
+
+
+if solver == 'simvascular':
+    # write bct.dat for simvascular
+    if saveName != 'bct': saveName = 'bct'
+    mesh3d = pv.read(vtuFile)
+    idx = [mesh3d.find_closest_point(pos[i]) for i in range(len(pos))]
+    xx, yy, zz = pos[:, 0].tolist(), pos[:, 1].tolist(), pos[:, 2].tolist()
+    fu = np.swapaxes(velcfd[:, :, 0], 0, 1)
+    fv = np.swapaxes(velcfd[:, :, 1], 0, 1)
+    fw = np.swapaxes(velcfd[:, :, 2], 0, 1)
+    np, nl = len(pos), len(tcfd)
+    with open(osp.join(profilesDir, saveName + '.dat'), 'w') as fn:
+        row = '{} {}\n'.format(np, nl)
+        fn.write(row)
+        for i in tqdm(range(np)):
+            row = '{} {} {} {} {}\n'.format(xx[i], yy[i], zz[i], nl, idx[i])
+            fn.write(row)
+            for j in range(nl):
+                row = '{} {} {} {}\n'.format(fu[i, j], fv[i, j], fw[i, j], tcfd[j])
+                fn.write(row)
+
+

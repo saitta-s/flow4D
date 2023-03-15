@@ -11,15 +11,15 @@ import utils as ut
 
 #-----------------------------------------------------------------------------------------------------------------------
 ## Options
-dataDir = r'C:\DATA\phd_laptop\data_4dflow\cornell_4dvar\2000'
-saveDir = 'output2000'
-subject_id = '004'
+dataDir = r''
+saveDir = r''
+subject_id = ''
 venc = [0] * 3
 flipX, flipY, flipZ = False, False, False
 minusU, minusV, minusW = False, False, False
 write_pcmra = True
-phaseCoeff = 10.0
-magCoeff = 1.0
+phaseCoeff = 1.0
+magCoeff = 10.0
 
 
 #-----------------------------------------------------------------------------------------------------------------------
