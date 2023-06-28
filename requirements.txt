@@ -1,0 +1,9 @@
+numpy
+tqdm
+pandas
+pydicom
+pyvista
+scipy
+scikit-learn
+vtk
+vmtk
