@@ -1,19 +1,15 @@
-
-
-import sys
+from collections import deque
+from glob import glob
 import os
 import os.path as osp
-import numpy as np
-from glob import glob
 import random
-from tqdm import tqdm
+import utils as ut
+
+import numpy as np
 import pandas as pd
 import pyvista as pv
 from sklearn.decomposition import PCA
-from collections import deque
-
-import utils as ut
-
+from tqdm import tqdm
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -168,7 +164,3 @@ for i in tqdm(range(500)):
         new_profs[k]['Velocity'] = U[k]
         new_profs[k].save(osp.join(synthOutDir, '{:03d}_{:02d}.vtp'.format(valid_count, k)))
     valid_count += 1
-
-
-
-

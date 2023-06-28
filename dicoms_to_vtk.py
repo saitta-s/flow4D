@@ -1,12 +1,12 @@
-import sys
 import os
 import os.path as osp
+import re
+import sys
+import utils as ut
+
 import numpy as np
 import pyvista as pv
 from tqdm import tqdm
-import re
-
-import utils as ut
 
 
 #-----------------------------------------------------------------------------------------------------------------------

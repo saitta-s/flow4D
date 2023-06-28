@@ -1,12 +1,13 @@
-import sys
+from collections import Counter
+from itertools import groupby
 import os
 from os.path import join
+import re
+import sys
+
 import numpy as np
-from itertools import groupby
 from tqdm import tqdm
 import pydicom
-from collections import Counter
-import re
 from scipy import interpolate
 from scipy.interpolate import RBFInterpolator, NearestNDInterpolator
 from scipy.spatial import distance

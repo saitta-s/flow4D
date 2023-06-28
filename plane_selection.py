@@ -1,13 +1,10 @@
-
-
+from glob import glob
 import os
 import os.path as osp
-from glob import glob
+import utils as ut
+
 import numpy as np
 import pyvista as pv
-from vmtk import vmtkscripts
-
-import utils as ut
 
 
 #-----------------------------------------------------------------------------------------------------------------------

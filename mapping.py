@@ -1,11 +1,10 @@
-import sys
+from glob import glob
 import os
 import os.path as osp
-import numpy as np
-from glob import glob
-import pyvista as pv
-
 import utils as ut
+
+import numpy as np
+import pyvista as pv
 
 
 #-----------------------------------------------------------------------------------------------------------------------

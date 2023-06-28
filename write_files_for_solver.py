@@ -1,11 +1,11 @@
-import sys
+from glob import glob
 import os
 import os.path as osp
+
 import numpy as np
 import pyvista as pv
-from glob import glob
-from tqdm import tqdm
 from scipy.interpolate import interp1d
+from tqdm import tqdm
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -108,5 +108,3 @@ if solver == 'simvascular':
             for j in range(nl):
                 row = '{} {} {} {}\n'.format(fu[i, j], fv[i, j], fw[i, j], tcfd[j])
                 fn.write(row)
-
-
