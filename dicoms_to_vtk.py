@@ -119,7 +119,7 @@ for f in tqdm(range(meta['num_frames']), desc='Processing and saving frames'):
     v   = velTemp[:, :, :, f, 1]
     w   = velTemp[:, :, :, f, 2]
 
-    grid = pv.UniformGrid()
+    grid = pv.ImageData()
     grid.dimensions = np.array(mag.shape)
     grid.origin = meta['origin']
     grid.spacing = meta['spacing'][::-1]
