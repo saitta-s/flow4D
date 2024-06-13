@@ -31,6 +31,8 @@ args = parser.parse_args()
 #-----------------------------------------------------------------------------------------------------------------------
 ## Read dicom files and create numpy arrays
 data, meta = ut.read_acquisition(args.data_dir)
+if args.venc == (0,0,0):
+    args.venc = meta['venc']
 arrayData = ut.seriesData_to_arrayData(data, meta)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -117,7 +119,7 @@ for f in tqdm(range(meta['num_frames']), desc='Processing and saving frames'):
     v   = velTemp[:, :, :, f, 1]
     w   = velTemp[:, :, :, f, 2]
 
-    grid = pv.UniformGrid()
+    grid = pv.ImageData()
     grid.dimensions = np.array(mag.shape)
     grid.origin = meta['origin']
     grid.spacing = meta['spacing'][::-1]
